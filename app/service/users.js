@@ -4,40 +4,37 @@ const Service = require('egg').Service;
 
 class UserService extends Service {
   async list() {
-    const users = await this.app.mysql.select('user');
+    const users = await this.app.model.Users.findAll();
     return users;
   }
 
   async getUserByUsername({ username }) {
-    const user = await this.app.mysql.get('user', { username });
-    return user;
+    const users = await this.app.model.Users.findOne({ where: { username } });
+    return users;
   }
 
   async getUserById({ id }) {
-    const user = await this.app.mysql.get('user', { id });
+    const user = await this.app.model.Users.findByPk(id);
     return user;
   }
 
   async create({ username, password }) {
     password = this.ctx.helper.sha(password);
-    await this.app.mysql.insert('user', { username, password });
+    await this.app.model.Users.create({ username, password });
     return;
   }
 
   async edit({ id, username, password }) {
-    const option = {
-      where: {
-        id,
-      },
-    };
     password = this.ctx.helper.sha(password);
-    await this.app.mysql.update('user', { username, password }, option);
+    const user = await this.app.model.Users.findByPk(id);
+    await user.update({ username, password });
     return;
   }
 
   async delete({ id }) {
-    const result = await this.app.mysql.delete('user', { id });
-    return result;
+    const user = await this.app.model.Users.findByPk(id);
+    await user.destroy();
+    return user;
   }
 }
 

@@ -1,48 +1,62 @@
 'use strict';
 
 const { app, assert } = require('egg-mock/bootstrap');
-const { genData, password, username2, username6 } = require('../../mockData/database');
-describe('test/app/service/user.test.js', () => {
+
+describe('test/app/service/users.test.js', () => {
+  let ctx;
+
   beforeEach(async () => {
-    await genData();
-  });
-  
-  it('should GET user list', async () => {
-    const ctx = app.mockContext();
-    const data = await ctx.service.user.list();
-    assert.equal(data.length, 5);
+    ctx = app.mockContext();
   });
 
-  it('should GET user2 by username', async () => {
-    const ctx = app.mockContext();
-    const user2 = await ctx.service.user.getUserByUsername({ username: username2 });
-    assert.equal(user2.username, username2);
+  describe('GET users list', () => {
+    it('should GET user list', async () => {
+      await app.factory.createMany('users', 5);
+      const data = await ctx.service.users.list();
+      assert.equal(data.length, 5);
+    });
   });
-  it('should GET user2 by id', async () => {
-    const ctx = app.mockContext();
-    const user2 = await ctx.service.user.getUserById({ id: 2 });
-    assert.equal(user2.username, 'username2');
+
+  describe('GET user2', () => {
+    it('should GET user2 by username', async () => {
+      await app.factory.createMany('users', 5);
+      const user = await app.factory.create('users');
+      const user2 = await ctx.service.users.getUserByUsername({ username: user.username });
+      assert.equal(user2.username, user.username);
+    });
+
+    it('should GET user2 by id', async () => {
+      const user = await app.factory.create('users');
+      const user2 = await ctx.service.users.getUserById({ id: user.id });
+      assert.equal(user2.username, user.username);
+    });
   });
-  it('should create a new user6', async () => {
-    const ctx = app.mockContext();
-    await ctx.service.user.create({ username: username6, password });
-    const count = await app.mysql.count('user');
-    assert.equal(count, 6);
-    const user6 = await app.mysql.get('user', { username: username6 });
-    assert.equal(user6.username, username6);
+
+  describe('create user', () => {
+    it('should create a new user6', async () => {
+      await app.factory.createMany('users', 5);
+      await ctx.service.users.create({ username: 'username_6', password: 'password' });
+      const count = await app.model.Users.count();
+      assert.equal(count, 6);
+      const user6 = await app.model.Users.findOne({ where: { username: 'username_6' } });
+      assert.equal(user6.username, 'username_6');
+    });
   });
-  it('should edit user2', async () => {
-    const ctx = app.mockContext();
-    await ctx.service.user.edit({ id: 2, username: 'usernameXXX', password });
-    const user2 = await app.mysql.get('user', { id: 2 });
-    assert.equal(user2.username, 'usernameXXX');
+
+
+  describe('edit user', () => {
+    it('should edit user2', async () => {
+      const user = await app.factory.create('users');
+      await ctx.service.users.edit({ id: user.id, username: 'usernameXXX', password: 'password' });
+      const user2 = await app.model.Users.findByPk(user.id);
+      assert.equal(user2.username, 'usernameXXX');
+    });
   });
-  it('should delete user2', async () => {
-    const ctx = app.mockContext();
-    await ctx.service.user.delete({ id: 2 });
-    const count = await app.mysql.count('user');
-    assert.equal(count, 4);
-    const user2 = await app.mysql.get('user', { id: 2 });
-    assert.equal(user2, null);
+
+  describe('delete user', () => {
+    it('should delete user2', async () => {
+      const user = await app.factory.create('users');
+      await ctx.service.users.delete({ id: user.id });
+    });
   });
 });

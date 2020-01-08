@@ -16,7 +16,8 @@
     "egg-scripts": "^2.11.0",
     "egg-sequelize": "^5.2.1",
     "egg-session-redis": "^2.1.0",
-    "egg-validate": "^2.0.2"
+    "egg-validate": "^2.0.2",
+    "mysql2": "^2.1.0"
   },
   "devDependencies": {
     "autod": "^3.0.1",
@@ -26,6 +27,8 @@
     "egg-mock": "^3.21.0",
     "eslint": "^5.13.0",
     "eslint-config-egg": "^7.1.0",
+    "factory-girl": "^5.0.4",
+    "sequelize-cli": "^5.5.1",
     "utility": "^1.16.3"
   },
   "engines": {

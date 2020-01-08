@@ -10,7 +10,7 @@ const rules = {
 class UserController extends Controller {
   async list() {
     try {
-      const users = await this.ctx.service.user.list();
+      const users = await this.ctx.service.users.list();
       if (users.length) {
         this.success(users);
       } else {
@@ -32,14 +32,14 @@ class UserController extends Controller {
     }
 
     // 检测用户是否存在
-    const user = await ctx.service.user.getUserByUsername({ username });
+    const user = await ctx.service.users.getUserByUsername({ username });
     if (user) {
       this.error('用户已存在');
       return;
     }
     // 创建用户
     try {
-      await ctx.service.user.create({ username, password });
+      await ctx.service.users.create({ username, password });
       this.success();
     } catch (error) {
       this.error(error.toString());
@@ -59,14 +59,14 @@ class UserController extends Controller {
     }
 
     // 检测用户是否存在
-    const user = await ctx.service.user.getUserById({ id });
+    const user = await ctx.service.users.getUserById({ id });
     if (!user) {
       this.error('用户不存在');
       return;
     }
     // 创建用户
     try {
-      await ctx.service.user.edit({ id, username, password });
+      await ctx.service.users.edit({ id, username, password });
       this.success();
     } catch (error) {
       this.error(error.toString());
@@ -78,14 +78,6 @@ class UserController extends Controller {
     const { username, password } = ctx.request.body;
     // 表单验证
 
-    console.log(ctx.queries);
-    console.log(ctx.headers);
-    console.log('aaaaaa', ctx.get('cookie'));
-    console.log('aaaaaa', ctx.host);
-    console.log('aaaaaa', ctx.protocol);
-    console.log('aaaaaa', ctx.ip);
-
-
     const errors = this.app.validator.validate(rules, ctx.request.body);
     if (errors) {
       const [ error ] = errors;
@@ -93,7 +85,7 @@ class UserController extends Controller {
       return;
     }
 
-    const user = await ctx.service.user.getUserByUsername({ username });
+    const user = await ctx.service.users.getUserByUsername({ username });
     if (!user) {
       this.error('用户不存在');
       return;
@@ -111,14 +103,14 @@ class UserController extends Controller {
   async delete() {
     const ctx = this.ctx;
     const { id } = ctx.request.query;
-    const user = await ctx.service.user.getUserById({ id });
+    const user = await ctx.service.users.getUserById({ id });
     if (!user) {
       this.error('用户不存在');
       return;
     }
 
     try {
-      await ctx.service.user.delete({ id });
+      await ctx.service.users.delete({ id });
       this.success();
     } catch (error) {
       this.error(error.toString());

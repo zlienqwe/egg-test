@@ -10,9 +10,7 @@ module.exports = app => {
       type: 'all', // 指定所有的 worker 都需要执行
     },
     async task(ctx) {
-      console.log('=============schedule=======================');
       console.log('ppppppppppppppp');
-      console.log('====================================');
     },
   };
 };
